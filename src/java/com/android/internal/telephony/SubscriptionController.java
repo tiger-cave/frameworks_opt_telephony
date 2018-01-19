@@ -98,8 +98,8 @@ import java.util.stream.Collectors;
  */
 public class SubscriptionController extends ISub.Stub {
     private static final String LOG_TAG = "SubscriptionController";
-    private static final boolean DBG = true;
-    private static final boolean VDBG = Rlog.isLoggable(LOG_TAG, Log.VERBOSE);
+    static final protected boolean DBG = true;
+    static final protected boolean VDBG = Rlog.isLoggable(LOG_TAG, Log.VERBOSE);
     private static final boolean DBG_CACHE = false;
     private static final int DEPRECATED_SETTING = -1;
     private static final ParcelUuid INVALID_GROUP_UUID =
@@ -130,7 +130,7 @@ public class SubscriptionController extends ISub.Stub {
     protected final Object mLock = new Object();
 
     /** The singleton instance. */
-    private static SubscriptionController sInstance = null;
+    protected static SubscriptionController sInstance = null;
     protected static Phone[] sPhones;
     @UnsupportedAppUsage
     protected Context mContext;
@@ -141,9 +141,9 @@ public class SubscriptionController extends ISub.Stub {
 
     // Each slot can have multiple subs.
     private static Map<Integer, ArrayList<Integer>> sSlotIndexToSubIds = new ConcurrentHashMap<>();
-    private static int mDefaultFallbackSubId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
+    protected static int mDefaultFallbackSubId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
     @UnsupportedAppUsage
-    private static int mDefaultPhoneId = SubscriptionManager.DEFAULT_PHONE_INDEX;
+    protected static int mDefaultPhoneId = SubscriptionManager.DEFAULT_PHONE_INDEX;
 
     @UnsupportedAppUsage
     private int[] colorArr;
@@ -259,7 +259,7 @@ public class SubscriptionController extends ISub.Stub {
     }
 
     @UnsupportedAppUsage
-    private void enforceModifyPhoneState(String message) {
+    protected void enforceModifyPhoneState(String message) {
         mContext.enforceCallingOrSelfPermission(
                 android.Manifest.permission.MODIFY_PHONE_STATE, message);
     }
@@ -1126,7 +1126,7 @@ public class SubscriptionController extends ISub.Stub {
                             // Set the default sub if not set or if single sim device
                             if (!isSubscriptionForRemoteSim(subscriptionType)) {
                                 if (!SubscriptionManager.isValidSubscriptionId(defaultSubId)
-                                        || subIdCountMax == 1) {
+                                        || subIdCountMax == 1 || (!isActiveSubId(defaultSubId))) {
                                     logdl("setting default fallback subid to " + subId);
                                     setDefaultFallbackSubId(subId, subscriptionType);
                                 }
@@ -2049,22 +2049,22 @@ public class SubscriptionController extends ISub.Stub {
         }
     }
 
-    private void logvl(String msg) {
+    protected void logvl(String msg) {
         logv(msg);
         mLocalLog.log(msg);
     }
 
-    private void logv(String msg) {
+    protected void logv(String msg) {
         Rlog.v(LOG_TAG, msg);
     }
 
     @UnsupportedAppUsage
-    private void logdl(String msg) {
+    protected void logdl(String msg) {
         logd(msg);
         mLocalLog.log(msg);
     }
 
-    private static void slogd(String msg) {
+    protected static void slogd(String msg) {
         Rlog.d(LOG_TAG, msg);
     }
 
@@ -2073,7 +2073,7 @@ public class SubscriptionController extends ISub.Stub {
         Rlog.d(LOG_TAG, msg);
     }
 
-    private void logel(String msg) {
+    protected void logel(String msg) {
         loge(msg);
         mLocalLog.log(msg);
     }
@@ -2270,7 +2270,7 @@ public class SubscriptionController extends ISub.Stub {
     }
 
     @UnsupportedAppUsage
-    private void updateAllDataConnectionTrackers() {
+    protected void updateAllDataConnectionTrackers() {
         // Tell Phone Proxies to update data connection tracker
         int len = sPhones.length;
         if (DBG) logd("[updateAllDataConnectionTrackers] sPhones.length=" + len);
@@ -2281,7 +2281,7 @@ public class SubscriptionController extends ISub.Stub {
     }
 
     @UnsupportedAppUsage
-    private void broadcastDefaultDataSubIdChanged(int subId) {
+    protected void broadcastDefaultDataSubIdChanged(int subId) {
         // Broadcast an Intent for default data sub change
         if (DBG) logdl("[broadcastDefaultDataSubIdChanged] subId=" + subId);
         Intent intent = new Intent(TelephonyIntents.ACTION_DEFAULT_DATA_SUBSCRIPTION_CHANGED);
@@ -2297,7 +2297,7 @@ public class SubscriptionController extends ISub.Stub {
      * the first sub is set as default subscription
      */
     @UnsupportedAppUsage
-    private void setDefaultFallbackSubId(int subId, int subscriptionType) {
+    protected void setDefaultFallbackSubId(int subId, int subscriptionType) {
         if (subId == SubscriptionManager.DEFAULT_SUBSCRIPTION_ID) {
             throw new RuntimeException("setDefaultSubId called with DEFAULT_SUB_ID");
         }
