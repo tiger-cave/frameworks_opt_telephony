@@ -182,7 +182,7 @@ public class ServiceStateTracker extends Handler {
      * expected responses in this pollingContext.
      */
     @VisibleForTesting
-    public int[] mPollingContext;
+    protected int[] mPollingContext;
     @UnsupportedAppUsage
     private boolean mDesiredPowerState;
 
@@ -420,7 +420,7 @@ public class ServiceStateTracker extends Handler {
 
     //Common
     @UnsupportedAppUsage
-    private final GsmCdmaPhone mPhone;
+    protected final GsmCdmaPhone mPhone;
 
     private CellIdentity mCellIdentity;
     private CellIdentity mNewCellIdentity;
@@ -2018,7 +2018,7 @@ public class ServiceStateTracker extends Handler {
         }
     }
 
-    void handlePollStateResultMessage(int what, AsyncResult ar) {
+    protected void handlePollStateResultMessage(int what, AsyncResult ar) {
         int ints[];
         switch (what) {
             case EVENT_POLL_STATE_CS_CELLULAR_REGISTRATION: {
